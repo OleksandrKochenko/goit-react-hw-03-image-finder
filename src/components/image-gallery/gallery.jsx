@@ -8,9 +8,9 @@ export default function ImageGallery({ images, openModal }) {
         return (
           <ImageGalleryItem
             key={item.id}
-            preview={item.preview}
-            original={item.original}
-            description={item.description}
+            preview={item.webformatURL}
+            original={item.largeImageURL}
+            description={item.tags}
             openModal={openModal}
           />
         );

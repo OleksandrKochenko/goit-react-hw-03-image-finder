@@ -1,9 +1,11 @@
 import css from './load-button.module.css';
 
-export default function Button() {
+function Button({ onClick }) {
   return (
-    <button className={css.button} type="button">
+    <button className={css.button} type="button" onClick={onClick}>
       Load more
     </button>
   );
 }
+
+export default Button;
