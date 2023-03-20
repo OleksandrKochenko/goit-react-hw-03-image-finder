@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { fetchPhotos } from './services/api';
 import Searchbar from './searchbar/searchbar';
 import ImageGallery from './image-gallery/gallery';
 import Loader from './loader/loader';
@@ -10,7 +10,7 @@ import './styles.css';
 class App extends Component {
   state = {
     qValue: '',
-    photos: null,
+    photos: [],
     total: 0,
     page: 1,
     isLoading: false,
@@ -25,38 +25,23 @@ class App extends Component {
       this.setState({
         isLoading: true,
       });
-      const responce = await this.fetchPhotos();
-      this.setState({
-        photos: responce.data.hits,
-        total: responce.data.totalHits,
+      const responce = await fetchPhotos(this.state.qValue, this.state.page);
+      this.setState(prevState => ({
+        photos: [...prevState.photos, ...responce.hits],
+        total: responce.totalHits,
+        page: prevState.page + 1,
         isLoading: false,
-      });
+      }));
     }
   }
-
-  fetchPhotos = () => {
-    const searchParams = new URLSearchParams({
-      key: '33271792-fb75e177a9af11daf6327433e',
-      image_type: 'photo',
-      orientation: 'horizontal',
-      safesearch: true,
-      per_page: 12,
-    });
-    this.setState(prevState => {
-      return {
-        page: prevState.page + 1,
-      };
-    });
-    return axios.get(
-      `https://pixabay.com/api/?q=${this.state.qValue}&page=${this.state.page}&${searchParams}`
-    );
-  };
 
   formSubmitHandler = quieryValue => {
     quieryValue.trim() === ''
       ? alert('Enter a search query')
       : this.setState({
+          photos: [],
           qValue: quieryValue.trim(),
+          page: 1,
         });
   };
 
@@ -64,10 +49,11 @@ class App extends Component {
     this.setState({
       isLoading: true,
     });
-    const responce = await this.fetchPhotos();
-    const newPhotos = responce.data.hits;
+    const responce = await fetchPhotos(this.state.qValue, this.state.page);
+    const newPhotos = responce.hits;
     this.setState(prevState => ({
       photos: [...prevState.photos, ...newPhotos],
+      page: prevState.page + 1,
       isLoading: false,
     }));
   };
@@ -95,7 +81,7 @@ class App extends Component {
       <>
         <Searchbar onSubmit={this.formSubmitHandler} />
 
-        {this.state.photos && (
+        {this.state.photos.length > 0 && (
           <ImageGallery
             images={this.state.photos}
             openModal={this.modalOpener}
@@ -113,9 +99,10 @@ class App extends Component {
           </Modal>
         )}
 
-        {this.state.photos && this.state.photos.length < this.state.total && (
-          <Button onClick={this.addPhotos} />
-        )}
+        {this.state.photos.length > 0 &&
+          this.state.photos.length < this.state.total && (
+            <Button onClick={this.addPhotos} />
+          )}
       </>
     );
   }
