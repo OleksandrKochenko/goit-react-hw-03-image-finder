@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types';
 import css from './gallery.module.css';
 export default function ImageGalleryItem({
-  id,
   preview,
   original,
   description,
@@ -12,10 +12,16 @@ export default function ImageGalleryItem({
         className={css.image_gallery_item_image}
         src={preview}
         alt={description}
-        name={id}
         data-source={original}
         onClick={openModal}
       />
     </li>
   );
 }
+
+ImageGalleryItem.propTypes = {
+  preview: PropTypes.string.isRequired,
+  original: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  openModal: PropTypes.func.isRequired,
+};

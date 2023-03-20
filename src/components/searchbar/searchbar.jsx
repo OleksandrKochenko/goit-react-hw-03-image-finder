@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import '../styles.css';
 import css from './searchbar.module.css';
 
 class Searchbar extends Component {
   state = {
     qValue: '',
+  };
+
+  static propTypes = {
+    onSubmit: PropTypes.func.isRequired,
   };
 
   handleChange = e => {
